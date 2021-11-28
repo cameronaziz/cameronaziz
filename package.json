@@ -5,8 +5,18 @@
   "engines": {
     "node": "^12.20 || >= 14.13"
   },
+  "scripts": {
+    "clean": "node scripts/clean.js",
+    "clean:install": "yarn clean && yarn install",
+    "dev": "yarn workspace @cameronaziz/server start --dev",
+    "dev:proxy": "yarn workspace @cameronaziz/server start:proxy",
+    "dev:app": "yarn workspace @cameronaziz/app dev",
+    "dev:key": "yarn workspace @cameronaziz/key dev"
+  },
   "workspaces": [
-    "./app",
-    "./key"
-  ]
+    "packages/*"
+  ],
+  "dependencies": {
+    "concurrently": "^6.4.0"
+  }
 }

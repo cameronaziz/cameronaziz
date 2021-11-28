@@ -1,0 +1,3 @@
+import proxyServer from '.';
+
+proxyServer();

@@ -1,13 +1,18 @@
-import svelte from "vite-plugin-svelte";
-import autopreprocess from "svelte-preprocess";
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
-const preprocess = autopreprocess({
-  postcss: {
-    plugins: [require("tailwindcss")]
-  }
+const config = defineConfig({
+  server: {
+    port: 4000,
+  },
+  plugins: [
+    svelte({
+      /* plugin options */
+    })
+  ],
+  optimizeDeps: {
+    exclude: ['svelte-navigator'],
+  },
 });
 
-export default {
-  plugins: [svelte({ preprocess })],
-  rollupDedupe: ["svelte"]
-};
+export default config;

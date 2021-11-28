@@ -12,29 +12,40 @@ generator client {
   engineType = "binary"
 }
 
-model User {
-  id       String @id @default(cuid())
-  name     String @default("")
-  email    String @unique @default("")
-  password String
-  posts    Post[] @relation("Post_author")
+model Author {
+  id    String @id @default(cuid())
+  name  String @default("")
+  email String @unique @default("")
+  posts Post[] @relation("Post_author")
+}
+
+model Image {
+  id                String    @id @default(cuid())
+  name              String    @default("")
+  content_filesize  Int?
+  content_extension String?
+  content_width     Int?
+  content_height    Int?
+  content_mode      String?
+  content_id        String?
+  publishDate       DateTime?
 }
 
 model Post {
-  id          String    @id @default(cuid())
-  title       String    @default("")
-  status      String?   @default("draft")
-  content     String    @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
-  publishDate DateTime?
-  author      User?     @relation("Post_author", fields: [authorId], references: [id])
-  authorId    String?   @map("author")
-  tags        Tag[]     @relation("Post_tags_Tag_posts")
+  id                    String    @id @default(cuid())
+  title                 String    @default("")
+  headerImage_filesize  Int?
+  headerImage_extension String?
+  headerImage_width     Int?
+  headerImage_height    Int?
+  headerImage_mode      String?
+  headerImage_id        String?
+  slug                  String    @unique @default("")
+  status                String?   @default("draft")
+  content               String    @default("")
+  publishDate           DateTime?
+  author                Author?   @relation("Post_author", fields: [authorId], references: [id])
+  authorId              String?   @map("author")
 
   @@index([authorId])
-}
-
-model Tag {
-  id    String @id @default(cuid())
-  name  String @default("")
-  posts Post[] @relation("Post_tags_Tag_posts")
 }
