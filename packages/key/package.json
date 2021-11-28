@@ -10,8 +10,7 @@
   "scripts": {
     "dev": "keystone-next dev",
     "start": "keystone-next start",
-    "build": "keystone-next build",
-    "seed": "keystone-next --seed-data"
+    "build": "keystone-next build"
   },
   "dependencies": {
     "@keystone-next/auth": "^36.0.0",

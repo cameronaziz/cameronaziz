@@ -2,6 +2,7 @@
   import { InMemoryCache, ApolloClient } from "@apollo/client";
   import { setClient } from "svelte-apollo";
   import { Router, Route } from "svelte-navigator";
+  import utils from "./utils";
   import Home from "./components/Home/Home.svelte";
   import NavBar from "./components/NavBar/NavBar.svelte";
   import About from "./components/About/About.svelte";
@@ -9,9 +10,10 @@
   import Post from "./components/Post/Post.svelte";
 
   export let url = window.location.pathname;
+  const keyURL = utils.environments.getKeyURL();
 
   const client = new ApolloClient({
-    uri: "http://localhost:5050/api/graphql",
+    uri: `${keyURL}/api/graphql`,
     cache: new InMemoryCache(),
   });
   setClient(client);
