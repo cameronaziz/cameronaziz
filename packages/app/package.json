@@ -9,17 +9,21 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "vite",
-    "compile": "cross-env NODE_ENV=production vite build",
-    "check": "svelte-check --human && tsc --noEmit",
-    "watch:svelte": "svelte-check --human --watch",
-    "watch:ts": "tsc --noEmit --watch",
     "start": "vite preview",
     "build": "vite build"
+  },
+  "workspaces": {
+    "nohoist": [
+      "attractions"
+    ]
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "@tsconfig/svelte": "^2.0.1",
     "cross-env": "^7.0.3",
+    "postcss": "^8.4.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "sass": "^1.43.5",
     "svelte": "^3.44.2",
     "svelte-check": "^2.2.10",
     "svelte-inline-svg": "^1.0.8",

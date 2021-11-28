@@ -6,10 +6,6 @@
     "node": "^12.20 || >= 14.13"
   },
   "scripts": {
-    "build": "yarn build:app && yarn build:key",
-    "build:app": "yarn workspace @cameronaziz/app build",
-    "build:key": "yarn workspace @cameronaziz/key build",
-    "start": "",
     "clean": "node scripts/clean.js",
     "clean:install": "yarn clean && yarn install",
     "dev": "yarn workspace @cameronaziz/server start --dev",
