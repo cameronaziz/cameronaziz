@@ -64,16 +64,39 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
               Attachments
             </div>
             <div className="flex flex-col gap-2">
-              {exp.attachments.map((att) => (
-                <div
-                  key={att.name}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[13px] ${att.color}`}
-                >
-                  <AttachmentIcon type={att.type} />
-                  <span className="truncate flex-1 text-[#1F1F1F]">{att.name}</span>
-                  <span className="text-[11px] text-gray-400">{att.size}</span>
-                </div>
-              ))}
+              {exp.attachments.map((att) => {
+                const chipClass = `flex items-start gap-2 px-3 py-2 rounded-xl text-[13px] ${att.color}${att.url ? ' hover:opacity-80 transition-opacity' : ''}`
+                const inner = (
+                  <>
+                    <span className="mt-0.5 shrink-0">
+                      <AttachmentIcon type={att.type} />
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block truncate text-[#1F1F1F]">{att.name}</span>
+                      {att.description && (
+                        <span className="block truncate text-[12px] text-[#5F6368]">{att.description}</span>
+                      )}
+                    </span>
+                    <span className="text-[11px] text-gray-400 mt-0.5 shrink-0">{att.size}</span>
+                  </>
+                )
+                return att.url ? (
+                  <a
+                    key={att.name}
+                    href={att.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => track('attachment_clicked', { experience_id: exp.id, attachment: att.name })}
+                    className={chipClass}
+                  >
+                    {inner}
+                  </a>
+                ) : (
+                  <div key={att.name} className={chipClass}>
+                    {inner}
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
