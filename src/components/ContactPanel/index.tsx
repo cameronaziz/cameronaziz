@@ -1,8 +1,8 @@
 import { useCallback, type ComponentType } from 'react'
 import { useSnapshot } from 'valtio'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, FileText } from 'lucide-react'
-import { useLocation } from 'wouter'
+import { useLocation, useRoute } from 'wouter'
 import { track } from '../../analytics'
 
 // SVG icon components for GitHub and LinkedIn (no Lucide equivalents)
@@ -71,8 +71,8 @@ const CONTACT_IDS = ['email', 'phone', 'location', 'github', 'linkedin']
 
 function ContactRow({ id }: { id: string }) {
   const item = getContactItem(id)
-  const [location] = useLocation()
-  const isExpanded = location === null
+  const [isOnExperience] = useRoute('/experience/:id')
+  const isExpanded = !isOnExperience
 
   const handleClick = useCallback(() => {
     if (item.link) {
@@ -113,8 +113,9 @@ function ContactRow({ id }: { id: string }) {
 
 /** The animated contact details column on the left. */
 export function ContactPanel() {
-  const [location, navigate] = useLocation()
-  const isCollapsed = location !== null && location !== '/' && !location.startsWith('/?')
+  const [, navigate] = useLocation()
+  // Collapse to 60px only when viewing an experience detail page
+  const [isCollapsed] = useRoute('/experience/:id')
 
   const handleClick = useCallback(() => {
     if (isCollapsed) {
