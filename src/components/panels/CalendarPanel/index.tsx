@@ -87,6 +87,9 @@ function DatePicker({ onClose }: { onClose: () => void }) {
                 d.setMonth(viewing.getMonth())
                 d.setDate(day)
                 calendarStore.date = d
+                track('calendar_date_selected', {
+                  date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
+                })
                 onClose()
               }}
               className={[
@@ -125,6 +128,7 @@ function TimePicker({ mode, onClose }: { mode: 'start' | 'end'; onClose: () => v
             onClick={() => {
               calendarStore.startHour = h
               calendarStore.startMinute = m
+              track('calendar_time_selected', { hour: h, minute: m })
               onClose()
             }}
             className={[
@@ -185,6 +189,7 @@ function GuestInput() {
           {g.editable && (
             <button
               onClick={() => {
+                track('calendar_guest_removed')
                 calendarStore.guests.splice(i, 1)
               }}
               className="ml-1 text-blue-400 hover:text-blue-600"
@@ -204,6 +209,7 @@ function GuestInput() {
             const val = (e.target as HTMLInputElement).value.trim()
             if (val && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
               calendarStore.guests.push({ address: val, editable: true, isValid: true })
+              track('calendar_guest_added', { guest_count: calendarStore.guests.length })
               ;(e.target as HTMLInputElement).value = ''
             }
           }
