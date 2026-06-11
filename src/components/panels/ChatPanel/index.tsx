@@ -56,7 +56,6 @@ export function ChatPanel() {
       {/* Header */}
       <div className="mt-1 mb-4 shrink-0">
         <div className="text-[10px] font-bold text-[#5F6368] tracking-widest uppercase">Chat with Cameron's AI</div>
-        <div className="text-[10px] font-normal text-[#9AA0A6] mt-0.5">Trained on Cameron's background</div>
       </div>
 
       {/* Messages */}

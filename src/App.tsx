@@ -8,6 +8,7 @@ import { EmailPanel } from './components/panels/EmailPanel'
 import { CalendarPanel } from './components/panels/CalendarPanel'
 import { ChatPanel } from './components/panels/ChatPanel'
 import { VideoPanel } from './components/panels/VideoPanel'
+import { ChatLauncher } from './components/ChatLauncher'
 import { appStore } from './store/app'
 import { track } from './analytics'
 
@@ -92,6 +93,8 @@ function AppShell() {
           <ContactPanel />
           <RightPanel />
         </div>
+
+        <ChatLauncher />
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { proxy } from 'valtio'
+import { track } from '../analytics'
 
 const GATEWAY = 'https://gateway.cameronaziz.com'
 
@@ -70,7 +71,7 @@ const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
   content:
-    "Hey! I'm an AI trained on Cameron's background. Ask me anything on his experience, tech stack, how he works, you name it.",
+    "Hey! Ask me anything about Cameron's experience, tech stack, how he works, you name it.",
   sentAt: new Date(),
 }
 
@@ -94,6 +95,8 @@ export async function sendMessage(): Promise<void> {
   const draft = chatStore.draft.trim()
   if (!draft || chatStore.isLoading) return
 
+  const priorUserMessages = chatStore.messages.filter((m) => m.role === 'user').length
+
   const userMsg: ChatMessage = {
     id: `msg-${Date.now()}`,
     role: 'user',
@@ -104,6 +107,12 @@ export async function sendMessage(): Promise<void> {
   chatStore.messages.push(userMsg)
   chatStore.draft = ''
   chatStore.isLoading = true
+
+  track('chat_message_sent', {
+    length: draft.length,
+    message_number: priorUserMessages + 1,
+    is_first_message: priorUserMessages === 0,
+  })
 
   const streamId = `streaming-${Date.now()}`
   const assistantMsg: ChatMessage = {
@@ -117,6 +126,8 @@ export async function sendMessage(): Promise<void> {
   const history = chatStore.messages
     .filter((m) => m.role === 'user' || (m.role === 'assistant' && m.content.length > 0))
     .map((m) => ({ role: m.role, content: m.content }))
+
+  const startedAt = Date.now()
 
   try {
     const response = await fetch(`${GATEWAY}/chat`, {
@@ -163,12 +174,22 @@ export async function sendMessage(): Promise<void> {
         }
       }
     }
-  } catch {
+
+    track('chat_response_received', {
+      latency_ms: Date.now() - startedAt,
+      response_length:
+        chatStore.messages.find((m) => m.id === streamId)?.content.length ?? 0,
+    })
+  } catch (err) {
     const idx = chatStore.messages.findIndex((m) => m.id === streamId)
     if (idx !== -1) {
       chatStore.messages[idx]!.content =
         "Something went wrong on my end. Try again in a moment."
     }
+    track('chat_response_failed', {
+      latency_ms: Date.now() - startedAt,
+      error: err instanceof Error ? err.message : String(err),
+    })
   } finally {
     chatStore.isLoading = false
     saveMessages(chatStore.messages)

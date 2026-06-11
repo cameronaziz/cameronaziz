@@ -1,4 +1,5 @@
 import { proxy } from 'valtio'
+import { track } from '../analytics'
 
 const GATEWAY = 'https://gateway.cameronaziz.com'
 
@@ -57,6 +58,7 @@ export async function sendCalendarInvite(): Promise<void> {
   const guestAddresses = guests.map((g) => g.address)
 
   calendarStore.sendStatus = 'sending'
+  const startedAt = Date.now()
 
   try {
     const res = await fetch(`${GATEWAY}/calendar-invite`, {
@@ -75,7 +77,18 @@ export async function sendCalendarInvite(): Promise<void> {
 
     if (!res.ok) throw new Error(`Send failed: ${res.status}`)
     calendarStore.sendStatus = 'sent'
-  } catch {
+    track('calendar_invite_sent', {
+      guest_count: guestAddresses.length,
+      date: dateStr,
+      start_hour: startHour,
+      latency_ms: Date.now() - startedAt,
+    })
+  } catch (err) {
     calendarStore.sendStatus = 'error'
+    track('calendar_invite_failed', {
+      guest_count: guestAddresses.length,
+      error: err instanceof Error ? err.message : String(err),
+      latency_ms: Date.now() - startedAt,
+    })
   }
 }
