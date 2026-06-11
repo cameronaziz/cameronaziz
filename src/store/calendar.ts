@@ -36,6 +36,9 @@ export const calendarStore = proxy<{
   title: string
   description: string
   phone: string
+  guestDraft: string
+  emailError: boolean
+  phoneError: boolean
   sendStatus: 'idle' | 'sending' | 'sent' | 'error'
 }>({
   guests: [{ address: 'hi@cameronaziz.com', editable: false, isValid: true }],
@@ -47,11 +50,58 @@ export const calendarStore = proxy<{
   title: 'Connect with Cameron Aziz',
   description: 'A quick meeting to connect with Cameron Aziz and yourself.',
   phone: '',
+  guestDraft: '',
+  emailError: false,
+  phoneError: false,
   sendStatus: 'idle',
 })
 
+export function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+}
+
+export function isValidPhone(value: string): boolean {
+  const digits = value.replace(/\D/g, '')
+  return digits.length >= 10 && digits.length <= 15
+}
+
+/**
+ * The requester is reachable if they gave a valid phone OR a valid email of
+ * their own. The pre-filled host address (editable: false) does not count, so a
+ * visitor must add their own email or a phone number.
+ */
+export function hasValidContact(): boolean {
+  const hasEmail =
+    calendarStore.guests.some((g) => g.editable && isValidEmail(g.address)) ||
+    isValidEmail(calendarStore.guestDraft)
+  return hasEmail || isValidPhone(calendarStore.phone)
+}
+
+/** Clears both red borders once either input satisfies the requirement. */
+export function clearContactErrorsIfSatisfied(): void {
+  if (hasValidContact()) {
+    calendarStore.emailError = false
+    calendarStore.phoneError = false
+  }
+}
+
 export async function sendCalendarInvite(): Promise<void> {
   if (calendarStore.sendStatus === 'sending') return
+
+  // Require either a phone or an email. If neither is valid, flag both inputs
+  // red and stop before sending.
+  if (!hasValidContact()) {
+    calendarStore.emailError = true
+    calendarStore.phoneError = true
+    return
+  }
+
+  // Capture a valid email typed but not yet committed as a chip.
+  const draft = calendarStore.guestDraft.trim()
+  if (isValidEmail(draft) && !calendarStore.guests.some((g) => g.address === draft)) {
+    calendarStore.guests.push({ address: draft, editable: true, isValid: true })
+    calendarStore.guestDraft = ''
+  }
 
   const { date, startHour, startMinute, title, description, phone, guests } = calendarStore
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
