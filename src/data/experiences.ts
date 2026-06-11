@@ -12,8 +12,8 @@ export interface Experience {
   date: string
   logo: string
   body: string
-  attachments: Attachment[]
-  themes: string[]
+  attachments: readonly Attachment[]
+  themes: readonly string[]
 }
 
 // Base64 logos extracted from the production bundle
