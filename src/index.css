@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Parkinsans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Dusk palette */
+  --color-dusk-50: #eef1fc;
+  --color-dusk-100: #dae0f7;
+  --color-dusk-200: #bcc6ee;
+  --color-dusk-300: #95a3dc;
+  --color-dusk-700: #1f2656;
+  --color-dusk-900: #0b0f28;
+
+  /* Prussian palette */
+  --color-prussian-100: #c2cbff;
+  --color-prussian-200: #8b9cff;
+  --color-prussian-300: #5268fa;
+  --color-prussian-400: #2e4aee;
+  --color-prussian-500: #1947e5;
+  --color-prussian-600: #1238ba;
+
+  /* Copper palette (used in toast icons) */
+  --color-copper-500: #c07d3a;
+
+  /* Ink (used in toast text) */
+  --color-ink: #1f1f1f;
+}
