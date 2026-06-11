@@ -93,7 +93,7 @@ On the engineering side, I improved throughput 50% through platform investment a
     id: 'chrome-river',
     title: 'Software Engineer',
     company: 'Chrome River Technologies',
-    date: '2015 to 2017',
+    date: 'Oct 2015 to Nov 2017',
     logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMzY0RjZCIi8+PHRleHQgeD0iMTYiIHk9IjIxIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNSPC90ZXh0Pjwvc3ZnPg==',
     body: `Chrome River was enterprise expense management software. I worked directly with clients, gathered requirements, deployed customized instances, and trained both end users and internal teams. Early career work, but it taught me something that stuck: shipping software is one problem, and getting people to actually use it is a different one.`,
     attachments: [],
