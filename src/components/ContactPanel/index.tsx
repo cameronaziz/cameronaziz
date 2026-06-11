@@ -51,7 +51,7 @@ interface ContactItem {
 function getContactItem(id: string): ContactItem {
   switch (id) {
     case 'email':
-      return { id, icon: Mail, value: 'hi@cameronaziz.com', label: 'Email', link: 'mailto:cameronaziz@me.com' }
+      return { id, icon: Mail, value: 'hi@cameronaziz.com', label: 'Email', link: 'mailto:hi@cameronaziz.com' }
     case 'github':
       return { id, icon: GitHubIcon, value: 'cameronaziz', label: 'Github', link: 'https://github.com/cameronaziz' }
     case 'phone':

@@ -26,9 +26,9 @@ export const EXPERIENCES: Experience[] = [
     id: 'axle',
     title: 'Staff Engineer',
     company: 'Axle Health',
-    date: '2025–Present',
+    date: '2025–2026',
     logo: AXLE_LOGO,
-    body: `Hey, thanks for reaching out. At Axle I work across the partner platform (React/TypeScript) and the clinician mobile app (React Native/Expo), modernizing two codebases that had picked up real tech debt without slowing releases down.
+    body: `Hey, thanks for reaching out. At Axle I worked across the partner platform (React/TypeScript) and the clinician mobile app (React Native/Expo), modernizing two codebases that had picked up real tech debt without slowing releases down.
 
 A few things I'm proud of: a model-driven scheduling and routing engine that cut clinician assignment latency from 45 seconds to under 10, a crash-resilient location tracking service with SQLite-backed persistence that closed the data gaps clinicians hit on low-connectivity field visits, and deterministic time-relative seeding that made our test and demo environments reproducible. I also rebuilt the decision support UI around a slow clinical endpoint with progressive loading, and ran launch logistics for several enterprise clients.`,
     attachments: [
