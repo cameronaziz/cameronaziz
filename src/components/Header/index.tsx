@@ -1,15 +1,13 @@
 import { Mail, Calendar, MessageSquare, Video } from 'lucide-react'
 import { ActionButton } from './ActionButton'
-
-// Public asset served at root — Vite copies public/ to dist/ as-is
-const profileImg = '/cameron_aziz.png'
+import profileImage from '../../assets/profileImage'
 
 export function Header() {
   return (
     <div className="flex items-start gap-8 p-8 pb-6 shrink-0">
       <div className="w-32 h-32 bg-indigo-400 rounded-2xl overflow-hidden shrink-0">
         <img
-          src={profileImg}
+          src={profileImage}
           alt="Cameron Aziz"
           className="w-full h-full object-cover"
         />
