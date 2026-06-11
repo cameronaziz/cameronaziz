@@ -93,7 +93,7 @@ function ContactRow({ id }: { id: string }) {
       <motion.div
         onClick={handleClick}
         initial={false}
-        animate={{ opacity: isExpanded ? 0 : 1 }}
+        animate={{ opacity: isExpanded ? 1 : 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="flex flex-col min-w-0 flex-1"
       >
