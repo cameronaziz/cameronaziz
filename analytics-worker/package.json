@@ -1,0 +1,14 @@
+{
+  "name": "portfolio-analytics",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cloudflare Worker that logs cameronaziz.com client events to D1",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "schema": "wrangler d1 execute portfolio-analytics --remote --file=./schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

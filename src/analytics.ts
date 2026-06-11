@@ -5,7 +5,7 @@
  * session id so downstream tooling can correlate activity without each call
  * site having to pass that context.
  */
-const GATEWAY = 'https://gateway.cameronaziz.com'
+const ANALYTICS_ENDPOINT = 'https://analytics.cameronaziz.com/event'
 
 function getDistinctId(): string {
   try {
@@ -36,7 +36,7 @@ export function track(event: string, props?: Record<string, unknown>): void {
   try {
     const distinctId = getDistinctId()
 
-    fetch(`${GATEWAY}/analytics`, {
+    fetch(ANALYTICS_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
