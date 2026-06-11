@@ -1,6 +1,8 @@
 import { Mail, Calendar, MessageSquare, Video } from 'lucide-react'
 import { ActionButton } from './ActionButton'
-import profileImg from '/cameron_aziz.png'
+
+// Public asset served at root — Vite copies public/ to dist/ as-is
+const profileImg = '/cameron_aziz.png'
 
 export function Header() {
   return (
