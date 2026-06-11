@@ -1,0 +1,18 @@
+name = "portfolio-analytics"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Public endpoint: https://analytics.cameronaziz.com
+# Attached as a Workers custom domain (Cloudflare manages TLS + DNS).
+routes = [
+  { pattern = "analytics.cameronaziz.com", custom_domain = true }
+]
+
+# D1 storage for analytics_events (see schema.sql).
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio-analytics"
+database_id = "a10425bc-9ff6-4286-a58f-3d4b789eea96"
+
+# ADMIN_TOKEN guards GET /events. It is a Worker secret, never commit it:
+#   wrangler secret put ADMIN_TOKEN
