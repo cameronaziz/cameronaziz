@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, ChevronLeft, ChevronRight } from 'lucide-react'
-import { calendarStore, sendCalendarInvite } from '../../../store/calendar'
+import {
+  calendarStore,
+  sendCalendarInvite,
+  isValidEmail,
+  clearContactErrorsIfSatisfied,
+} from '../../../store/calendar'
 import { track } from '../../../analytics'
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
@@ -146,7 +151,6 @@ function TimePicker({ mode, onClose }: { mode: 'start' | 'end'; onClose: () => v
 
 function SendButton() {
   const { sendStatus, guests } = useSnapshot(calendarStore)
-  const validGuests = guests.filter((g) => g.isValid)
 
   if (sendStatus === 'sent') {
     return (
@@ -156,16 +160,20 @@ function SendButton() {
     )
   }
 
+  // The button stays clickable so submitting without contact info can surface
+  // the red borders. sendCalendarInvite() enforces the phone-or-email rule.
+  const sending = sendStatus === 'sending'
+
   return (
     <button
       onClick={() => {
-        track('calendar_invite_attempted', { guest_count: validGuests.length })
+        track('calendar_invite_attempted', { guest_count: guests.length })
         sendCalendarInvite()
       }}
-      disabled={sendStatus === 'sending' || validGuests.length === 0}
+      disabled={sending}
       className={[
         'flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-colors',
-        sendStatus === 'sending' || validGuests.length === 0
+        sending
           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
           : 'bg-[#1A73E8] text-white hover:bg-blue-600 cursor-pointer',
       ].join(' ')}
@@ -177,9 +185,14 @@ function SendButton() {
 }
 
 function GuestInput() {
-  const { guests } = useSnapshot(calendarStore)
+  const { guests, guestDraft, emailError } = useSnapshot(calendarStore)
   return (
-    <div className="flex flex-wrap gap-1 p-2 bg-gray-50 border border-gray-200 rounded-xl min-h-[40px]">
+    <div
+      className={[
+        'flex flex-wrap gap-1 p-2 bg-gray-50 border rounded-xl min-h-[40px] transition-colors',
+        emailError ? 'border-red-500' : 'border-gray-200',
+      ].join(' ')}
+    >
       {guests.map((g, i) => (
         <span
           key={i}
@@ -201,21 +214,49 @@ function GuestInput() {
       ))}
       <input
         type="email"
-        placeholder="Add guest email…"
+        value={guestDraft}
+        placeholder="Add your email…"
         className="flex-1 min-w-[140px] bg-transparent text-[13px] outline-none text-[#1F1F1F] placeholder:text-gray-400"
+        onFocus={() => { calendarStore.phoneError = false }}
+        onChange={(e) => {
+          calendarStore.guestDraft = e.target.value
+          clearContactErrorsIfSatisfied()
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ',') {
             e.preventDefault()
             const val = (e.target as HTMLInputElement).value.trim()
-            if (val && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+            if (val && isValidEmail(val)) {
               calendarStore.guests.push({ address: val, editable: true, isValid: true })
+              calendarStore.guestDraft = ''
+              calendarStore.emailError = false
+              calendarStore.phoneError = false
               track('calendar_guest_added', { guest_count: calendarStore.guests.length })
-              ;(e.target as HTMLInputElement).value = ''
             }
           }
         }}
       />
     </div>
+  )
+}
+
+function PhoneInput() {
+  const { phone, phoneError } = useSnapshot(calendarStore)
+  return (
+    <input
+      type="tel"
+      value={phone}
+      placeholder="Add your phone number…"
+      className={[
+        'w-full px-3 py-2 bg-gray-50 border rounded-xl text-[13px] text-[#1F1F1F] outline-none transition-colors',
+        phoneError ? 'border-red-500' : 'border-gray-200 focus:border-blue-300',
+      ].join(' ')}
+      onFocus={() => { calendarStore.emailError = false }}
+      onChange={(e) => {
+        calendarStore.phone = e.target.value
+        clearContactErrorsIfSatisfied()
+      }}
+    />
   )
 }
 
@@ -270,10 +311,17 @@ export function CalendarPanel() {
             />
           </div>
 
-          {/* Guests */}
+          {/* Email */}
           <div>
-            <label className="text-[10px] font-bold text-[#9AA0A6] uppercase tracking-wider mb-1 block">Guests</label>
+            <label className="text-[10px] font-bold text-[#9AA0A6] uppercase tracking-wider mb-1 block">Email</label>
             <GuestInput />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="text-[10px] font-bold text-[#9AA0A6] uppercase tracking-wider mb-1 block">Phone</label>
+            <PhoneInput />
+            <p className="text-[11px] text-[#9AA0A6] mt-1.5">Add your email or a phone number so Cameron can reach you.</p>
           </div>
         </div>
       </div>
