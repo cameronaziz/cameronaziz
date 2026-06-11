@@ -3,6 +3,8 @@ export interface Attachment {
   size: string
   color: string
   type: 'file' | 'link' | 'video'
+  url?: string
+  description?: string
 }
 
 export interface Experience {
@@ -28,15 +30,12 @@ export const EXPERIENCES: Experience[] = [
     company: 'Axle Health',
     date: '2025–2026',
     logo: AXLE_LOGO,
-    body: `Hey, thanks for reaching out. At Axle I worked across the partner platform (React/TypeScript) and the clinician mobile app (React Native/Expo), modernizing two codebases that had picked up real tech debt without slowing releases down.
+    body: `At Axle I worked on two products: a partner scheduling platform in React/TypeScript and a clinician mobile app in React Native/Expo. The core technical challenge was latency. The scheduling engine was making sequential model calls that pushed decision time to 45 seconds. I redesigned it around parallel execution and an event-driven state layer, bringing that under 10 seconds.
 
-A few things I'm proud of: a model-driven scheduling and routing engine that cut clinician assignment latency from 45 seconds to under 10, a crash-resilient location tracking service with SQLite-backed persistence that closed the data gaps clinicians hit on low-connectivity field visits, and deterministic time-relative seeding that made our test and demo environments reproducible. I also rebuilt the decision support UI around a slow clinical endpoint with progressive loading, and ran launch logistics for several enterprise clients.`,
-    attachments: [
-      { name: 'axle-case-study.pdf', size: '2.1 MB', color: 'text-red-500 bg-red-50', type: 'file' },
-      { name: 'dashboard-v2.png', size: '380 KB', color: 'text-blue-500 bg-blue-50', type: 'file' },
-      { name: 'github.com/caleb/axle-pr-483', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link' },
-      { name: 'loom.com/share/axle-walkthrough', size: 'Video', color: 'text-purple-500 bg-purple-50', type: 'video' },
-    ],
+The other major project was GPS tracking for field clinicians. The original implementation dropped location data when the app backgrounded or the network dropped. I rebuilt it with SQLite-backed persistence and a sync queue that survived any app state, which eliminated data gaps across all connectivity environments.
+
+I also built a time-relative seeding system for deterministic test and demo environments, which cut regression cycles and made QA substantially more reliable.`,
+    attachments: [],
     themes: ['AI/ML', 'DX'],
   },
   {
@@ -45,13 +44,14 @@ A few things I'm proud of: a model-driven scheduling and routing engine that cut
     company: 'Evidently',
     date: '2022–2025',
     logo: EVIDENTLY_LOGO,
-    body: `At Evidently I led development of Ask Evidently, an LLM intelligence platform that turns messy, unstructured source documents into clean, queryable data. I built the context-processing pipelines and decision workflows behind it: RAG, semantic caching, and agentic workflows, all wrapped in evaluation pipelines that held extraction quality high under production load and inside a strict HIPAA boundary. A prompt abstraction layer let the clinical team update logic without engineering overhead, which took new model rollouts from weeks to days.
+    body: `At Evidently I built Ask Evidently from the ground up. It's an AI chat interface embedded directly in the EHR that reads the entire patient chart (clinical notes, outside records, scanned documents) and answers clinical questions in natural language. Today it's deployed at health systems including Allina Health and the University of Iowa Health Care.
 
-I also stepped into the frontend engineering manager seat. I set compensation, sat on the leadership interview panel, held the final hiring call for frontend, and grew an early-career hire into an independent owner. Shipping Ask Evidently to our first enterprise customers, plus the analytics and feedback loops I stood up to steer the roadmap, helped land our $15M Series A. Somewhere in there I also defined the design system that cut frontend fragmentation across teams.`,
+The hard part wasn't the LLM. It was the data. Patient charts contain thousands of unstructured records across disconnected sources, and getting reliable, traceable answers out of that required RAG pipelines, semantic caching, and a prompt abstraction layer that let clinical teams update logic without needing an engineering deploy. HIPAA and SOC 2 Type II compliance were built into every layer from day one, which became a meaningful differentiator in enterprise sales.
+
+The product was central to a $15M Series A and the company's first deployments at major US health networks.`,
     attachments: [
-      { name: 'evidently-architecture.pdf', size: '1.4 MB', color: 'text-red-500 bg-red-50', type: 'file' },
-      { name: 'github.com/evidently/llm-gateway', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link' },
-      { name: 'model-pipeline.png', size: '850 KB', color: 'text-blue-500 bg-blue-50', type: 'file' },
+      { name: 'Ask Evidently', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link', url: 'https://www.evidently.com/ask-evidently', description: 'the AI chat product I built' },
+      { name: 'Value-Based Care', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link', url: 'https://www.evidently.com/solutions/value-based-care', description: 'clinical data intelligence product' },
     ],
     themes: ['AI/ML', 'Platform'],
   },
@@ -61,12 +61,15 @@ I also stepped into the frontend engineering manager seat. I set compensation, s
     company: 'The Knot Worldwide',
     date: '2020–2022',
     logo: 'data:image/webp;base64,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',
-    body: `Hey! At TKWW I directed a platform modernization across our core consumer products, supporting 30M+ monthly sessions while keeping scalability, accessibility, and performance in balance. A big piece of that was taking reliability from 95% to 99.8% uptime by rebuilding the CI/CD pipelines around automated circuit breakers and canary deployments.
+    body: `The Knot Worldwide is one of the largest wedding marketplaces in the world. When I joined, the core platform had a reliability problem: uptime was hovering around 95%. Over the next year I led the effort to redesign CI/CD with automated circuit breakers and canary deployments, and pushed uptime to 99.8% across a platform serving over 30 million monthly sessions.
 
-I led the frontend team through a full TypeScript migration, built an internal developer portal that cut environment spin-up times by 70%, and operationalized an A/B testing framework that moved conversion and engagement while dropping CLS and client-side errors. I covered as interim Engineering Manager for six months during my manager's parental leave, and I designed a pair-programming interview that mirrored the real day-to-day work. It spread on its own and became the team's standard for evaluating candidates.`,
+The other major project was experimentation infrastructure. I built a unified A/B testing framework that let product teams run concurrent experiments without stepping on each other, which directly improved conversion and engagement across the platform. The repo linked below is a working sample of the consent and test-group assignment system we used.
+
+I also built an internal developer platform (IDE extensions, linting frameworks, debugging tools) that cut onboarding time significantly and standardized workflows across distributed teams.`,
     attachments: [
-      { name: 'reliability-report.pdf', size: '900 KB', color: 'text-red-500 bg-red-50', type: 'file' },
-      { name: 'dev-portal-loom.com', size: 'Video', color: 'text-purple-500 bg-purple-50', type: 'video' },
+      { name: 'github.com/cameronaziz/tkww-interview', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link', url: 'https://github.com/cameronaziz/tkww-interview', description: 'A/B testing consent framework' },
+      { name: 'Platform features press release', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link', url: 'https://www.theknotww.com/press-releases/the-knot-worldwide-announces-new-platform-features-to-drive-wedding-vendor-success', description: 'built on the platform I worked on' },
+      { name: 'theknotww.com', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link', url: 'https://www.theknotww.com' },
     ],
     themes: ['Platform', 'DX'],
   },
@@ -76,11 +79,13 @@ I led the frontend team through a full TypeScript migration, built an internal d
     company: 'dv01',
     date: '2019–2020',
     logo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABj0lEQVR4nO2WTUsCURSG/QmzFoLZBEEEA0EEQszKXeC+P2DQQrctcqBFG2NauJGQwAhyERNujpsK27gxLJJACI5BhAhl2N2fuOKFnLp4x48rhAee9XPO+84wEwrNZz5jDiCzZik3AVkHkMVmtYAHyAiQISAzdMtjfbnA1Sk3+tGTD1t39ORj+lXA7+hJWxUgj15PFYDsREE+nSoAma0op8vnL4p6TXfS0aPqAqlKmy/AmUwVgMwNcv1m8UUsgFGvaWiLHgavF7jaoj9+7Pjl41UBo0c/gH1Wx3DcNQJ/ZiGAfKv0KruelvcvKBx3g1UByGqTkK9lbrlcoFYFIHNU5PmnzyByzvAqQDH6w7t3aeec1aMrv1zgjBV9odGl7es3qXgj/0CLu6cyucAKHH2h0aVEuSUVR3JVWto7HyYW1GT/d+Qnc/8hFXPpykGRzGRWVSyvApDdiAeL98ulPzvm0a5nK2SlS72IF3Yyo0j/riJVaZuJcsuJes0ekVzVsdKlHmYy6/Btp0RM4aWczz+fb0Bod3h0HkwlAAAAAElFTkSuQmCC',
-    body: `At dv01 I architected the flagship SaaS platform that moved the company from an enterprise-only product to a scalable self-serve model. That shift changed how the product could grow, and it was a fun problem to own end to end.
+    body: `dv01 is a structured finance data platform. When I joined, the core product was enterprise-only. I architected the SaaS transition to a self-serve model, which opened the platform to a much broader market and fundamentally changed how the company could grow.
 
-Alongside the build, I mentored the junior engineers and set the coding standards that took production regressions down 30% and lifted engineering throughput 50%. A lot of that came from working shoulder to shoulder with the backend, data pipeline, and data integrity teams to speed up our release cycles.`,
+The product I built is Tape Cracker, a tool for loan tape analysis that normalizes messy structured finance data, runs cashflow projections, and lets buy-side teams collaborate on due diligence in one place. The kind of workflow that used to require a Bloomberg terminal and a dedicated data team, made self-serve.
+
+On the engineering side, I improved throughput 50% through platform investment and tooling, and reduced production regressions 30% through standards and mentorship.`,
     attachments: [
-      { name: 'saas-launch-deck.pdf', size: '1.1 MB', color: 'text-red-500 bg-red-50', type: 'file' },
+      { name: 'dv01 Tape Cracker', size: 'Link', color: 'text-gray-600 bg-gray-100', type: 'link', url: 'https://www.dv01.co/offerings/tape-cracker/', description: 'the product I built' },
     ],
     themes: ['Platform'],
   },
@@ -90,9 +95,7 @@ Alongside the build, I mentored the junior engineers and set the coding standard
     company: 'Chrome River Technologies',
     date: '2015–2017',
     logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMzY0RjZCIi8+PHRleHQgeD0iMTYiIHk9IjIxIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNSPC90ZXh0Pjwvc3ZnPg==',
-    body: `Chrome River is where I got my footing. I worked directly with enterprise clients, gathering requirements, deploying customized instances of the application, and making sure their teams actually knew how to use what we shipped.
-
-I ran technical training for both customers and internal teams on the product's features and administration. That early exposure showed me how wide the gap can be between shipping software and shipping software people actually adopt, and it has shaped how I build ever since.`,
+    body: `Chrome River was enterprise expense management software. I worked directly with clients, gathered requirements, deployed customized instances, and trained both end users and internal teams. Early career work, but it taught me something that stuck: shipping software is one problem, and getting people to actually use it is a different one.`,
     attachments: [],
     themes: ['Platform'],
   },
