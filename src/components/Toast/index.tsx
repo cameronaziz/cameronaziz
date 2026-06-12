@@ -55,7 +55,7 @@ export function ToastHost() {
   const { toasts } = useSnapshot(toastStore)
 
   return (
-    <div className="absolute bottom-5 right-5 z-50 flex flex-col items-end gap-2 pointer-events-none">
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2 pointer-events-none">
       <AnimatePresence initial={false}>
         {toasts.map((toast) => (
           <ToastCard key={toast.id} toast={toast as ToastData} />

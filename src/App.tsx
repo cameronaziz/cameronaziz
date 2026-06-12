@@ -96,8 +96,10 @@ function AppShell() {
         </div>
 
         <ChatLauncher />
-        <ToastHost />
       </div>
+
+      {/* Toast host sits outside the scaled card so it never affects card layout */}
+      <ToastHost />
     </div>
   )
 }
