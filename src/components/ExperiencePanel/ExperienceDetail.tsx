@@ -78,8 +78,10 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
             </div>
           </div>
         )}
+      </div>
 
-        {/* Reply: button, composer, or persisted post-send confirmation */}
+      {/* Reply footer — pinned, always visible without scrolling */}
+      <div className="shrink-0 px-6 pt-3 pb-4 border-t border-dusk-100">
         <ReplySection experienceId={experienceId} />
       </div>
     </motion.div>
