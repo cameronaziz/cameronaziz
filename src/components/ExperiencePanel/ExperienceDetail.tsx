@@ -16,7 +16,7 @@ import {
 import { useLocation } from 'wouter'
 import { experienceStore } from '../../store/app'
 import { track } from '../../analytics'
-import { openReply } from '../../store/email'
+import { openReply, emailStore } from '../../store/email'
 import type { Attachment } from '../../data/experiences'
 
 function AttachmentIcon({ type }: { type: Attachment['type'] }) {
@@ -49,9 +49,12 @@ function HeaderButton({ icon: Icon, onClick, isDisabled = false }: HeaderButtonP
 
 export function ExperienceDetail({ experienceId }: { experienceId: string }) {
   const { experiences } = useSnapshot(experienceStore)
+  const emailSnap = useSnapshot(emailStore)
   const [, navigate] = useLocation()
 
   const exp = experiences.find((e) => e.id === experienceId)
+
+  const isComposing = emailSnap.isOpen && emailSnap.activeId === experienceId
 
   const { prevId, nextId } = useMemo(() => {
     const idx = experiences.findIndex((e) => e.id === experienceId)
@@ -93,9 +96,9 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
     <motion.div
       key={`exp-${experienceId}`}
       initial={{ y: 15 }}
-      animate={{ y: 0 }}
+      animate={{ y: isComposing ? -12 : 0, scale: isComposing ? 0.95 : 1 }}
       exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
-      transition={{ duration: 0.4, delay: 0.1, ease: [0.2, 0.9, 0.2, 1] }}
+      transition={{ duration: 0.5, ease: [0.2, 0.9, 0.2, 1] }}
       className="h-full flex flex-col relative w-full bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
     >
       <motion.div
