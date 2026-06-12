@@ -30,7 +30,7 @@ function relativeTime(iso: string): string {
   return days === 1 ? 'yesterday' : `${days}d ago`
 }
 
-function ReplyComposer({ experienceId }: { experienceId: string }) {
+export function ReplyComposer({ experienceId }: { experienceId: string }) {
   const snap = useSnapshot(emailStore)
   const draft = snap.drafts[experienceId]
   const status = snap.sendStatus

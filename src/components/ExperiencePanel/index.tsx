@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useSnapshot } from 'valtio'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { useRoute, useLocation } from 'wouter'
+import { useLocation } from 'wouter'
 import { appStore, experienceStore } from '../../store/app'
 import { track } from '../../analytics'
 import type { Experience } from '../../data/experiences'
@@ -156,14 +156,8 @@ function DefaultView() {
 export function ExperiencePanel() {
   const { view } = useSnapshot(appStore)
   return (
-    <div className="relative flex-1 h-full">
-      <div className="absolute inset-0">
-        <div className="h-full relative w-full">
-          <AnimatePresence mode="wait" initial={false}>
-            {view === 'VIEW_MORE' ? <MoreView /> : <DefaultView />}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
+    <AnimatePresence mode="wait" initial={false}>
+      {view === 'VIEW_MORE' ? <MoreView /> : <DefaultView />}
+    </AnimatePresence>
   )
 }
