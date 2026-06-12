@@ -9,6 +9,7 @@ import { CalendarPanel } from './components/panels/CalendarPanel'
 import { ChatPanel } from './components/panels/ChatPanel'
 import { VideoPanel } from './components/panels/VideoPanel'
 import { ChatLauncher } from './components/ChatLauncher'
+import { ToastHost } from './components/Toast'
 import { appStore } from './store/app'
 import { track } from './analytics'
 
@@ -96,6 +97,9 @@ function AppShell() {
 
         <ChatLauncher />
       </div>
+
+      {/* Toast host sits outside the scaled card so it never affects card layout */}
+      <ToastHost />
     </div>
   )
 }
