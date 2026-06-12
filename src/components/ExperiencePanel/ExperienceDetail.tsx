@@ -145,7 +145,7 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
                 <div className="text-[12px] text-gray-500 mt-0.5">to recruiters</div>
               </div>
             </div>
-            <div className="text-[13px] text-gray-500 mt-1">{exp.date}</div>
+            <div className="text-[13px] text-gray-500 mt-1">{exp.startDate} to {exp.endDate}</div>
           </div>
 
           {/* Body paragraphs */}
