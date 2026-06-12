@@ -28,40 +28,53 @@ function FilterTab({ tab }: { tab: string }) {
   )
 }
 
-// ---- Single experience row in VIEW_MORE ----
-function ExperienceRow({ experience, index }: { experience: Experience; index: number }) {
+// ---- Single experience row ----
+function ExperienceRow({ experience, source = 'more_view' }: { experience: Experience; source?: string }) {
   const [, navigate] = useLocation()
 
   const handleClick = useCallback(() => {
-    track('experience_selected', { experience_id: experience.id, source: 'more_view' })
+    track('experience_selected', { experience_id: experience.id, source })
     navigate(`/experience/${experience.id}`)
-  }, [navigate, experience.id])
+  }, [navigate, experience.id, source])
 
   return (
     <motion.button
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 1, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 + index * 0.04 }}
       onClick={handleClick}
-      className="cursor-pointer w-full flex items-center text-left px-4 py-3 hover:bg-[#F8F9FA] rounded-2xl transition-colors group"
+      className="flex items-center text-left py-3 px-4 cursor-pointer rounded-2xl gap-4 group w-full hover:bg-dusk-100"
     >
-      <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center mr-4 shrink-0 border border-gray-200 group-hover:shadow-sm transition-all overflow-hidden">
+      <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-white rounded-full shadow-sm border border-gray-100 group-hover:border-gray-300 transition-colors overflow-hidden">
         <img src={experience.logo} alt={experience.company} className="w-full h-full object-cover" />
       </div>
-      <div className="flex-1 flex items-center gap-2 min-w-0 pr-4">
-        <span className="font-medium text-gray-900 truncate text-[14px]">{experience.company}</span>
-        <span className="text-gray-400 shrink-0">—</span>
-        <span className="text-gray-500 truncate text-[14px]">{experience.title}</span>
+      <div className="flex-1">
+        <div className="flex justify-between w-full">
+          <div className="text-[14px] font-semibold text-[#1F1F1F]">{experience.company}</div>
+          <div className="text-[12px] text-[#5F6368] leading-tight mt-0.5">
+          {experience.endDate}
+        </div>
+        </div>
+        <div className="text-[12px] text-[#5F6368] leading-tight mt-0.5">
+          {experience.title}
+        </div>
       </div>
-      <span className="text-[13px] text-gray-400 whitespace-nowrap">{experience.date}</span>
     </motion.button>
   )
 }
 
-// ---- VIEW_MORE panel ----
-function MoreView() {
+/** Top-level experience panel — crossfades between DEFAULT and VIEW_MORE with animated height. */
+export function ExperiencePanel() {
+  const { view } = useSnapshot(appStore)
   const { experiences, tabs, activeTab } = useSnapshot(experienceStore)
+  const isMore = view === 'VIEW_MORE'
+
   const filtered = activeTab === 'All' ? experiences : experiences.filter((e) => e.themes.includes(activeTab))
+  const rows = isMore ? filtered : experiences.slice(0, 3)
+
+  const handleMore = useCallback(() => {
+    track('more_experiences_clicked')
+    appStore.view = 'VIEW_MORE'
+  }, [])
 
   const handleClose = useCallback(() => {
     track('more_view_closed')
@@ -69,95 +82,104 @@ function MoreView() {
   }, [])
 
   return (
-    <motion.div
-      key="more"
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
-      transition={{ duration: 0.3, delay: 0.1 }}
-      className="flex flex-col h-full w-full"
-    >
-      <div className="flex items-center justify-between px-6 py-3 bg-[#F1F3F4] border-b border-gray-100 mb-2 shrink-0">
-        <div className="flex gap-2">
-          {tabs.map((tab) => (
-            <FilterTab key={tab} tab={tab} />
-          ))}
-        </div>
-        <button onClick={handleClose} className="text-gray-400 hover:text-gray-700 p-1">
-          <X size={20} />
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-auto px-2 pb-4 pt-1">
-        {filtered.map((exp, i) => (
-          <ExperienceRow key={exp.id} experience={exp} index={i} />
-        ))}
-      </div>
-    </motion.div>
-  )
-}
-
-// ---- DEFAULT (resting) view ----
-function DefaultView() {
-  const { experiences } = useSnapshot(experienceStore)
-  const [, navigate] = useLocation()
-
-  const handleMore = useCallback(() => {
-    track('more_experiences_clicked')
-    appStore.view = 'VIEW_MORE'
-  }, [])
-
-  return (
-    <motion.div
-      key="resting"
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col h-full w-full"
-    >
-      <h3 className="text-[10px] font-bold text-[#5F6368] tracking-widest uppercase mb-4 shrink-0 mt-1">
-        RECENT INTERACTIONS
-      </h3>
-      <div className="bg-[#F1F3F4] rounded-[24px] p-2 flex flex-col">
-        {experiences.slice(0, 3).map((exp) => (
-          <button
-            key={exp.id}
-            onClick={() => {
-              track('experience_selected', { experience_id: exp.id, source: 'resting_view' })
-              navigate(`/experience/${exp.id}`)
-            }}
-            className="flex items-center text-left p-4 hover:bg-white/50 cursor-pointer transition-colors rounded-2xl gap-4 group"
-          >
-            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-white rounded-lg shadow-sm border border-transparent group-hover:border-gray-200 transition-colors overflow-hidden">
-              <img src={exp.logo} alt={exp.company} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1">
-              <div className="text-[14px] font-semibold text-[#1F1F1F]">{exp.company}</div>
-              <div className="text-[12px] text-[#5F6368] leading-tight mt-0.5">
-                {exp.title} · {exp.date}
+    <div className="w-full flex flex-col h-full">
+      {/* Header row — fixed height, both elements absolutely positioned inside */}
+      <div className="relative h-10 mb-3 shrink-0">
+        <AnimatePresence initial={false}>
+          {!isMore && (
+            <motion.h3
+              key="title"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.075 } }}
+              transition={{ duration: 0.075, delay: 0.09 }}
+              className="absolute inset-0 flex items-center text-[10px] font-bold text-[#5F6368] tracking-widest uppercase"
+            >
+              RECENT INTERACTIONS
+            </motion.h3>
+          )}
+          {isMore && (
+            <motion.div
+              key="filters"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.075 } }}
+              transition={{ duration: 0.2, delay: 0.09 }}
+              className="absolute inset-0 flex items-center justify-between"
+            >
+              <div className="flex gap-2">
+                {tabs.map((tab, i) => (
+                  <motion.div
+                    key={tab}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8, transition: { duration: 0.075 } }}
+                    transition={{ duration: 0.2, delay: 0.09 + i * 0.04 }}
+                  >
+                    <FilterTab tab={tab} />
+                  </motion.div>
+                ))}
               </div>
-            </div>
-          </button>
-        ))}
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.075 } }}
+                transition={{ duration: 0.2, delay: 0.09 + tabs.length * 0.04 }}
+                onClick={handleClose}
+                className="text-gray-400 hover:text-gray-700 p-1 rounded-full bg-dusk-100 cursor-pointer"
+              >
+                <X size={20} />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      <div className="mt-3 flex justify-end px-2">
-        <button
-          onClick={handleMore}
-          className="cursor-pointer text-[#1A73E8] text-[14px] font-semibold hover:underline px-4 py-1"
-        >
-          More
-        </button>
-      </div>
-    </motion.div>
-  )
-}
 
-/** Top-level experience panel — toggles between DEFAULT and VIEW_MORE. */
-export function ExperiencePanel() {
-  const { view } = useSnapshot(appStore)
-  return (
-    <AnimatePresence mode="wait" initial={false}>
-      {view === 'VIEW_MORE' ? <MoreView /> : <DefaultView />}
-    </AnimatePresence>
+      {/* List — scrollable, fills remaining height */}
+      <div className={`bg-[#E8EAED] rounded-[24px] p-2 flex flex-col ${isMore ? 'flex-1 overflow-y-auto min-h-0' : ''}`}>
+        <AnimatePresence initial={false}>
+          {rows.map((exp, i) => (
+            <motion.div
+              key={exp.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ExperienceRow experience={exp} source={isMore ? 'more_view' : 'resting_view'} />
+              {i < rows.length - 1 && (
+                <div
+                  className="h-px mx-2"
+                  style={{
+                    background: 'linear-gradient(to right, transparent 40px, rgba(0,0,0,0.08) 50px, rgba(0,0,0,0.08) calc(100% - 50px), transparent calc(100% - 40px))',
+                  }}
+                />
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* More button */}
+      <AnimatePresence initial={false}>
+        {!isMore && (
+          <motion.div
+            key="more-btn"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-3 flex justify-end px-2"
+          >
+            <button
+              onClick={handleMore}
+              className="cursor-pointer text-[#1A73E8] text-[14px] font-semibold hover:underline px-4 py-1"
+            >
+              More
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }

@@ -1,13 +1,13 @@
 import { Mail, Calendar, MessageSquare, Video } from 'lucide-react'
 import { ActionButton } from './ActionButton'
-import profileImage from '../../assets/profileImage'
+import cameronAziz from '../../assets/images/cameron_aziz.png'
 
 export function Header() {
   return (
     <div className="flex items-start gap-8 p-8 pb-6 shrink-0">
       <div className="w-32 h-32 bg-indigo-400 rounded-2xl overflow-hidden shrink-0">
         <img
-          src={profileImage}
+          src={cameronAziz}
           alt="Cameron Aziz"
           className="w-full h-full object-cover"
         />
@@ -18,7 +18,7 @@ export function Header() {
           Cameron Aziz
         </h1>
         <p className="text-[18px] text-[#5F6368] font-normal mb-8">
-          Staff Engineer. React. AI/ML. GraphQL.
+          Software Engineering. React. AI/ML. GraphQL.
         </p>
 
         <div className="flex gap-4">
