@@ -1,6 +1,6 @@
 import { useSnapshot } from 'valtio'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Reply, Send, X, Check } from 'lucide-react'
+import { Send, X, Check, Reply } from 'lucide-react'
 import {
   emailStore,
   openReply,
@@ -9,13 +9,6 @@ import {
   clearFromErrorIfSatisfied,
   type SendStatus,
 } from '../../store/email'
-
-const SEND_LABEL: Record<SendStatus, string> = {
-  idle: 'Send',
-  sending: 'Sending…',
-  sent: 'Sent!',
-  error: 'Try again',
-}
 
 function relativeTime(iso: string): string {
   const then = new Date(iso).getTime()
@@ -42,113 +35,86 @@ export function ReplyComposer({ experienceId }: { experienceId: string }) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Composer header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
-        <div className="flex items-center gap-2 text-[#5F6368]">
-          <Reply size={14} />
-          <span className="text-[12px] font-semibold tracking-wide uppercase">Reply</span>
-        </div>
-        <button
-          type="button"
-          onClick={closeReply}
-          aria-label="Close reply"
-          className="text-gray-400 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-        >
-          <X size={16} />
-        </button>
-      </div>
 
-      <div className="px-4 py-3 flex flex-col gap-3 shrink-0 border-b border-gray-100">
-        {/* To (fixed host address) */}
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold text-[#9AA0A6] uppercase tracking-wider w-14 shrink-0">To</span>
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] bg-blue-50 text-blue-700">
-            {to}
-          </span>
-        </div>
+      {/* Header: editable subject + close button, then From / To / CC rows */}
+      <div className="px-4 pt-3 pb-2 border-b border-gray-100 shrink-0">
 
-        {/* From (visitor email, optional) */}
-        <div className="flex items-center gap-2">
-          <label className="text-[11px] font-bold text-[#9AA0A6] uppercase tracking-wider w-14 shrink-0" htmlFor="reply-from">
-            From
-          </label>
+        {/* Subject row */}
+        <div className="flex items-center justify-between mb-3">
           <input
-            id="reply-from"
-            type="email"
-            value={draft.from.address}
-            placeholder="you@example.com (optional)"
-            onChange={(e) => {
-              emailStore.drafts[experienceId]!.from.address = e.target.value
-              clearFromErrorIfSatisfied(experienceId)
-            }}
-            className={[
-              'flex-1 px-3 py-1.5 bg-gray-50 border rounded-xl text-[13px] text-[#1F1F1F] outline-none transition-colors',
-              draft.from.isValid ? 'border-gray-200 focus:border-blue-300' : 'border-red-400 focus:border-red-400',
-            ].join(' ')}
-          />
-        </div>
-
-        {/* Subject */}
-        <div className="flex items-center gap-2">
-          <label className="text-[11px] font-bold text-[#9AA0A6] uppercase tracking-wider w-14 shrink-0" htmlFor="reply-subject">
-            Subject
-          </label>
-          <input
-            id="reply-subject"
             type="text"
             value={draft.subject}
-            onChange={(e) => {
-              emailStore.drafts[experienceId]!.subject = e.target.value
-            }}
-            className="flex-1 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-[#1F1F1F] outline-none focus:border-blue-300 transition-colors"
+            onChange={(e) => { emailStore.drafts[experienceId]!.subject = e.target.value }}
+            className="text-[14px] font-bold text-gray-700 bg-transparent outline-none flex-1 pr-4"
           />
+          <button
+            type="button"
+            onClick={closeReply}
+            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 cursor-pointer transition-colors shrink-0"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* From / To / CC */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 min-h-6">
+            <span className="text-[12px] text-gray-400 w-8 shrink-0">From</span>
+            <input
+              type="email"
+              value={draft.from.address}
+              placeholder="email@example.com"
+              onChange={(e) => {
+                emailStore.drafts[experienceId]!.from.address = e.target.value
+                clearFromErrorIfSatisfied(experienceId)
+              }}
+              className="flex-1 outline-none min-w-0 text-[13px] bg-transparent placeholder:text-gray-300 text-gray-700"
+            />
+          </div>
+          <div className="flex items-center gap-2 min-h-6">
+            <span className="text-[12px] text-gray-400 w-8 shrink-0">To</span>
+            <div className="flex-1 text-[13px]">
+              <span className="inline rounded-full px-2 py-0.5 text-[12px] mx-0.5 bg-blue-50 text-blue-700 shadow-[inset_0_0_0_0.5px_#60a5fa]">
+                {to}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 min-h-6">
+            <span className="text-[12px] text-gray-400 w-8 shrink-0">CC</span>
+            <input
+              type="email"
+              placeholder="email@example.com"
+              className="flex-1 outline-none min-w-0 text-[13px] bg-transparent placeholder:text-gray-300 text-gray-700"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Body */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3">
+      {/* Body: plain editable area + quoted text */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col text-[14px] text-gray-700 leading-relaxed">
         <textarea
           value={draft.body}
-          rows={6}
-          onChange={(e) => {
-            emailStore.drafts[experienceId]!.body = e.target.value
-          }}
-          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-[#1F1F1F] leading-relaxed outline-none focus:border-blue-300 resize-none transition-colors"
+          onChange={(e) => { emailStore.drafts[experienceId]!.body = e.target.value }}
+          className="flex-1 w-full outline-none resize-none bg-transparent text-[14px] text-gray-700 leading-relaxed"
         />
-
-        {/* Quoted experience body */}
         {draft.quoted && (
-          <div className="border-l-2 border-gray-200 pl-3 ml-0.5">
-            <div className="text-[11px] text-[#9AA0A6] mb-1">Quoting this email</div>
-            <p className="text-[12px] text-[#9AA0A6] leading-snug line-clamp-3 whitespace-pre-wrap">{draft.quoted}</p>
+          <div className="border-l-2 border-gray-200 pl-3 text-[13px] text-gray-400 leading-relaxed whitespace-pre-wrap mt-3 shrink-0">
+            {draft.quoted}
           </div>
         )}
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-gray-100 shrink-0">
-        <button
-          type="button"
-          onClick={closeReply}
-          className="px-3 py-1.5 rounded-xl text-[13px] font-medium text-[#5F6368] hover:bg-gray-100 transition-colors cursor-pointer"
-        >
-          Cancel
-        </button>
+      {/* Footer: Send only */}
+      <div className="px-4 py-3 border-t border-gray-100 shrink-0 flex items-center justify-between">
+        <span />
         <button
           type="button"
           onClick={() => sendReply(experienceId)}
           disabled={sending}
-          className={[
-            'flex items-center gap-2 px-4 py-1.5 rounded-xl text-[13px] font-medium transition-colors',
-            sent
-              ? 'bg-[#34A853] text-white'
-              : sending
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-[#1A73E8] text-white hover:bg-blue-600 cursor-pointer',
-          ].join(' ')}
+          className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-[13px] font-medium px-4 py-2 rounded-full transition-colors cursor-pointer"
         >
-          {sent ? <Check size={14} /> : <Send size={14} />}
-          {SEND_LABEL[status]}
+          {sent ? <Check size={13} strokeWidth={2.5} /> : <Send size={13} strokeWidth={2.5} />}
+          {sent ? 'Sent!' : sending ? 'Sending…' : 'Send'}
         </button>
       </div>
     </div>
@@ -183,8 +149,7 @@ function RepliedConfirmation({ experienceId }: { experienceId: string }) {
 }
 
 /**
- * Switches between the Reply button, the open composer, and the persisted
- * post-send confirmation. Used in non-overlay contexts.
+ * Inline reply section — used in non-overlay contexts only.
  */
 export function ReplySection({ experienceId }: { experienceId: string }) {
   const snap = useSnapshot(emailStore)

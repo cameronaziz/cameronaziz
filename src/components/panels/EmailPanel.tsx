@@ -41,7 +41,7 @@ export function EmailPanel() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ duration: 0.45, ease: [0.2, 0.9, 0.2, 1] }}
-            className="absolute inset-0 bg-white shadow-lg flex flex-col rounded-3xl overflow-hidden z-10"
+            className="absolute inset-0 bg-white border-t border-gray-200 shadow-lg flex flex-col rounded-3xl overflow-hidden z-10"
           >
             <ReplyComposer experienceId={experienceId} />
           </motion.div>
