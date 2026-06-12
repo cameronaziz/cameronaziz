@@ -1,10 +1,11 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSnapshot } from 'valtio'
 import { motion } from 'framer-motion'
-import { FileText, Link2, Video } from 'lucide-react'
+import { ArrowLeft, Star, Reply, ChevronLeft, ChevronRight, X, FileText, Link2, Video } from 'lucide-react'
 import { useLocation } from 'wouter'
 import { experienceStore } from '../../store/app'
 import { track } from '../../analytics'
+import { openReply } from '../../store/email'
 import type { Attachment } from '../../data/experiences'
 import { ReplySection } from './ReplyComposer'
 
@@ -14,15 +15,64 @@ function AttachmentIcon({ type }: { type: Attachment['type'] }) {
   return <FileText size={14} />
 }
 
+interface HeaderButtonProps {
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>
+  onClick?: () => void
+  isDisabled?: boolean
+}
+
+function HeaderButton({ icon: Icon, onClick, isDisabled = false }: HeaderButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={isDisabled}
+      className={[
+        'p-2 rounded-full transition-colors',
+        isDisabled
+          ? 'text-gray-300 cursor-default'
+          : 'hover:bg-gray-100 text-gray-500 cursor-pointer',
+      ].join(' ')}
+    >
+      <Icon size={18} strokeWidth={2} />
+    </button>
+  )
+}
+
 export function ExperienceDetail({ experienceId }: { experienceId: string }) {
   const { experiences } = useSnapshot(experienceStore)
-  const exp = experiences.find((e) => e.id === experienceId)
   const [, navigate] = useLocation()
 
-  const handleBack = useCallback(() => {
-    track('experience_back_clicked', { experience_id: experienceId })
+  const exp = experiences.find((e) => e.id === experienceId)
+
+  const { prevId, nextId } = useMemo(() => {
+    const idx = experiences.findIndex((e) => e.id === experienceId)
+    return {
+      prevId: idx > 0 ? experiences[idx - 1]!.id : null,
+      nextId: idx !== -1 && idx < experiences.length - 1 ? experiences[idx + 1]!.id : null,
+    }
+  }, [experiences, experienceId])
+
+  const handleClose = useCallback(() => {
+    track('experience_detail_closed', { experience_id: experienceId })
     navigate('/')
   }, [navigate, experienceId])
+
+  const handlePrev = useCallback(() => {
+    if (!prevId) return
+    track('experience_navigation', { direction: 'previous', experience_id: experienceId })
+    navigate(`/experience/${prevId}`)
+  }, [navigate, prevId, experienceId])
+
+  const handleNext = useCallback(() => {
+    if (!nextId) return
+    track('experience_navigation', { direction: 'next', experience_id: experienceId })
+    navigate(`/experience/${nextId}`)
+  }, [navigate, nextId, experienceId])
+
+  const handleReply = useCallback(() => {
+    openReply(experienceId)
+  }, [experienceId])
 
   if (!exp) {
     navigate('/')
@@ -32,26 +82,25 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
   return (
     <motion.div
       key={`exp-${experienceId}`}
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8, transition: { duration: 0.2 } }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col h-full w-full bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
+      exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.4, delay: 0.1, ease: [0.2, 0.9, 0.2, 1] }}
+      className="flex flex-col h-full w-full relative bg-white rounded-3xl shadow-sm overflow-hidden"
     >
-      {/* Header */}
-      <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-100 shrink-0">
-        <button
-          onClick={handleBack}
-          className="text-[#1A73E8] text-[13px] font-medium hover:underline"
-        >
-          ← Back
-        </button>
-        <div className="w-8 h-8 rounded-lg overflow-hidden border border-gray-100">
-          <img src={exp.logo} alt={exp.company} className="w-full h-full object-cover" />
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-white shrink-0">
+        <div className="flex items-center gap-0.5">
+          <HeaderButton icon={ArrowLeft} onClick={handleClose} />
+          <HeaderButton icon={Star} />
+          <HeaderButton icon={Reply} onClick={handleReply} />
+          <div className="w-px h-5 bg-gray-200 mx-1.5" />
         </div>
-        <div>
-          <div className="text-[14px] font-semibold text-[#1F1F1F]">{exp.company}</div>
-          <div className="text-[12px] text-[#5F6368]">{exp.title} · {exp.date}</div>
+        <div className="flex items-center gap-0.5 pr-1">
+          <HeaderButton icon={ChevronLeft} onClick={handlePrev} isDisabled={!prevId} />
+          <HeaderButton icon={ChevronRight} onClick={handleNext} isDisabled={!nextId} />
+          <div className="w-px h-5 bg-gray-200 mx-1.5" />
+          <HeaderButton icon={X} onClick={handleClose} />
         </div>
       </div>
 
@@ -80,8 +129,8 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
         )}
       </div>
 
-      {/* Reply footer — pinned, always visible without scrolling */}
-      <div className="shrink-0 px-6 pt-3 pb-4 border-t border-dusk-100">
+      {/* Reply footer — always visible, triggered by the Reply toolbar button */}
+      <div className="shrink-0 px-4 pt-2 pb-3 border-t border-gray-100">
         <ReplySection experienceId={experienceId} />
       </div>
     </motion.div>
