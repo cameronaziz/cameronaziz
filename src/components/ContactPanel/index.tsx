@@ -99,7 +99,7 @@ function ContactRow({ id }: { id: string }) {
       >
         <span
           className={[
-            'text-[15px] truncate font-medium',
+            'text-[14px] font-medium',
             link ? 'text-[#1A73E8] cursor-pointer hover:underline' : 'text-[#1F1F1F]',
           ].join(' ')}
         >
