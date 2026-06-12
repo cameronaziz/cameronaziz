@@ -24,7 +24,7 @@ function ToastCard({ toast }: { toast: ToastData }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.97 }}
       transition={{ duration: 0.22, ease: [0.2, 0.9, 0.2, 1] }}
-      className="pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-2xl shadow-lg border border-surface-300 bg-surface-50 min-w-[260px] max-w-[380px]"
+      className="pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-2xl shadow-lg border border-gray-200 bg-white min-w-[260px] max-w-[380px]"
     >
       <div className="shrink-0 mt-0.5">
         <ToastIcon kind={toast.kind} />
@@ -33,13 +33,13 @@ function ToastCard({ toast }: { toast: ToastData }) {
         {toast.title && (
           <div className="text-[13px] font-semibold text-ink leading-snug">{toast.title}</div>
         )}
-        <div className="text-[13px] text-ink-muted leading-snug break-words">{toast.content}</div>
+        <div className="text-[13px] text-[#5f5a52] leading-snug break-words">{toast.content}</div>
       </div>
       <button
         type="button"
         onClick={() => dismissToast(toast.id)}
         aria-label="Dismiss notification"
-        className="shrink-0 p-0.5 rounded-full hover:bg-surface-200 text-ink-faint hover:text-ink-subtle transition-colors cursor-pointer"
+        className="shrink-0 p-0.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
       >
         <X size={13} strokeWidth={2.5} />
       </button>
