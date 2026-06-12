@@ -105,7 +105,7 @@ function ContactRow({ id }: { id: string }) {
         >
           {value}
         </span>
-        <span className="text-[12px] text-[#70757A] truncate">{label ?? ' '}</span>
+        <span className="text-[11px] text-[#70757A] truncate">{label ?? ' '}</span>
       </motion.div>
     </div>
   )
