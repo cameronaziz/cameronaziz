@@ -30,7 +30,7 @@ function relativeTime(iso: string): string {
   return days === 1 ? 'yesterday' : `${days}d ago`
 }
 
-function ReplyComposer({ experienceId }: { experienceId: string }) {
+export function ReplyComposer({ experienceId }: { experienceId: string }) {
   const snap = useSnapshot(emailStore)
   const draft = snap.drafts[experienceId]
   const status = snap.sendStatus
@@ -41,9 +41,9 @@ function ReplyComposer({ experienceId }: { experienceId: string }) {
   const sent = status === 'sent'
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+    <div className="flex flex-col h-full">
       {/* Composer header */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#F8F9FA] border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
         <div className="flex items-center gap-2 text-[#5F6368]">
           <Reply size={14} />
           <span className="text-[12px] font-semibold tracking-wide uppercase">Reply</span>
@@ -52,13 +52,13 @@ function ReplyComposer({ experienceId }: { experienceId: string }) {
           type="button"
           onClick={closeReply}
           aria-label="Close reply"
-          className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+          className="text-gray-400 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
         >
           <X size={16} />
         </button>
       </div>
 
-      <div className="px-4 py-3 flex flex-col gap-3">
+      <div className="px-4 py-3 flex flex-col gap-3 shrink-0 border-b border-gray-100">
         {/* To (fixed host address) */}
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold text-[#9AA0A6] uppercase tracking-wider w-14 shrink-0">To</span>
@@ -103,8 +103,10 @@ function ReplyComposer({ experienceId }: { experienceId: string }) {
             className="flex-1 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-[#1F1F1F] outline-none focus:border-blue-300 transition-colors"
           />
         </div>
+      </div>
 
-        {/* Message */}
+      {/* Body */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3">
         <textarea
           value={draft.body}
           rows={6}
@@ -124,7 +126,7 @@ function ReplyComposer({ experienceId }: { experienceId: string }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t border-gray-100">
+      <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-gray-100 shrink-0">
         <button
           type="button"
           onClick={closeReply}
@@ -182,7 +184,7 @@ function RepliedConfirmation({ experienceId }: { experienceId: string }) {
 
 /**
  * Switches between the Reply button, the open composer, and the persisted
- * post-send confirmation. The composer expands and collapses in place.
+ * post-send confirmation. Used in non-overlay contexts.
  */
 export function ReplySection({ experienceId }: { experienceId: string }) {
   const snap = useSnapshot(emailStore)

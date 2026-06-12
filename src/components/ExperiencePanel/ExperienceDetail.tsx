@@ -7,7 +7,6 @@ import { experienceStore } from '../../store/app'
 import { track } from '../../analytics'
 import { openReply } from '../../store/email'
 import type { Attachment } from '../../data/experiences'
-import { ReplySection } from './ReplyComposer'
 
 function AttachmentIcon({ type }: { type: Attachment['type'] }) {
   if (type === 'link') return <Link2 size={14} />
@@ -86,7 +85,7 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
       transition={{ duration: 0.4, delay: 0.1, ease: [0.2, 0.9, 0.2, 1] }}
-      className="flex flex-col h-full w-full relative bg-white rounded-3xl shadow-sm overflow-hidden"
+      className="flex flex-col h-full w-full relative bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
     >
       {/* Toolbar */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-white shrink-0">
@@ -127,11 +126,6 @@ export function ExperienceDetail({ experienceId }: { experienceId: string }) {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Reply footer — always visible, triggered by the Reply toolbar button */}
-      <div className="shrink-0 px-4 pt-2 pb-3 border-t border-gray-100">
-        <ReplySection experienceId={experienceId} />
       </div>
     </motion.div>
   )
